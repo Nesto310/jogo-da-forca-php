@@ -14,7 +14,7 @@ if ($palavraSorteada === '') {
     $palavraSorteada = $palavras[$indice];
 }
 
-// 4. Processa a nova letra digitada [cite: 13, 14]
+// 4. Processa a nova letra digitada
 $letra = $_POST['letra'] ?? '';
 $letra = strtolower(trim(substr($letra, 0, 1)));
 
@@ -26,19 +26,19 @@ if ($letra !== "" && $erros < 6) {
     if (strpos($letrasTentadas, $letra) === false) {
         $letrasTentadas .= $letra; // Adiciona ao histórico de tentativas
         
-        // Verifica se a letra sorteada contém a letra digitada [cite: 14]
+        // Verifica se a letra sorteada contém a letra digitada
         if (strpos($palavraSorteada, $letra) === false) {
             $erros++;
-            $mensagem = "Errou! A letra não existe na palavra."; [cite: 15]
+            $mensagem = "Errou! A letra não existe na palavra."; 
         } else {
-            $mensagem = "Acertou! A letra existe na palavra."; [cite: 14]
+            $mensagem = "Acertou! A letra existe na palavra."; 
         }
     } else {
         $mensagem = "Você já tentou essa letra.";
     }
 }
 
-// 6. Monta a palavra para exibição (escondendo as letras não tentadas) [cite: 8, 9]
+// 6. Monta a palavra para exibição (escondendo as letras não tentadas)
 $palavraExibicao = '';
 $acertos = 0;
 for ($i = 0; $i < strlen($palavraSorteada); $i++) {
@@ -49,7 +49,7 @@ for ($i = 0; $i < strlen($palavraSorteada); $i++) {
         $palavraExibicao .= $letraAtual . " ";
         $acertos++;
     } else {
-        $palavraExibicao .= "_ "; [cite: 9, 10]
+        $palavraExibicao .= "_ "; 
     }
 }
 
