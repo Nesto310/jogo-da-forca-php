@@ -1,59 +1,56 @@
 <?php
-// 1. O array de palavras possíveis 
+// O array de palavras possíveis
 $palavras = ["php", "html", "css", "mysql", "java", "python", "linux"];
 
-// 2. Recupera o estado do jogo via POST (campos ocultos para não perder o progresso) 
+// Recupera o estado do jogo via POST
 $palavraSorteada = $_POST['palavra_sorteada'] ?? '';
 $letrasTentadas = $_POST['letras_tentadas'] ?? '';
 $erros = (int)($_POST['erros'] ?? 0);
 $mensagem = "";
 
-// 3. Se não tem palavra sorteada, é uma nova partida 
+// Se não tem palavra sorteada, é uma nova partida
 if ($palavraSorteada === '') {
-    $indice = array_rand($palavras); // Sorteia a posição 
+    $indice = array_rand($palavras);
     $palavraSorteada = $palavras[$indice];
 }
 
-// 4. Processa a nova letra digitada
+// Processa a nova letra digitada
 $letra = $_POST['letra'] ?? '';
 $letra = strtolower(trim(substr($letra, 0, 1)));
 
 $fimDeJogo = false;
 
-// 5. Lógica de acertos e erros
+// Lógica de acertos e erros
 if ($letra !== "" && $erros < 6) {
-    // Verifica se a letra já foi tentada
     if (strpos($letrasTentadas, $letra) === false) {
         $letrasTentadas .= $letra; // Adiciona ao histórico de tentativas
         
-        // Verifica se a letra sorteada contém a letra digitada
         if (strpos($palavraSorteada, $letra) === false) {
             $erros++;
-            $mensagem = "Errou! A letra não existe na palavra."; 
+            $mensagem = "Errou! A letra não existe na palavra.";
         } else {
-            $mensagem = "Acertou! A letra existe na palavra."; 
+            $mensagem = "Acertou! A letra existe na palavra.";
         }
     } else {
         $mensagem = "Você já tentou essa letra.";
     }
 }
 
-// 6. Monta a palavra para exibição (escondendo as letras não tentadas)
+// Monta a palavra para exibição (escondendo as letras não tentadas)
 $palavraExibicao = '';
 $acertos = 0;
 for ($i = 0; $i < strlen($palavraSorteada); $i++) {
     $letraAtual = substr($palavraSorteada, $i, 1);
     
-    // Se a letra atual da palavra já foi tentada, exibe. Se não, exibe o traço.
     if (strpos($letrasTentadas, $letraAtual) !== false) {
         $palavraExibicao .= $letraAtual . " ";
         $acertos++;
     } else {
-        $palavraExibicao .= "_ "; 
+        $palavraExibicao .= "_ ";
     }
 }
 
-// 7. Verifica condição de vitória ou derrota
+// Verifica condição de vitória ou derrota
 if ($erros >= 6) {
     $mensagem = "Fim de jogo! Você foi enforcado. A palavra era: " . strtoupper($palavraSorteada);
     $fimDeJogo = true;
@@ -67,7 +64,8 @@ if ($erros >= 6) {
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Forca PHP Versão 0.2</title> <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Forca PHP v1.1.0</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
     <div class="container py-5">
@@ -75,7 +73,11 @@ if ($erros >= 6) {
             <div class="col-md-6">
                 <div class="card shadow-sm">
                     <div class="card-body text-center">
-                        <h1 class="h3 mb-3">Jogo da Forca v1.0.0</h1>
+                        <h1 class="h3 mb-3">Jogo da Forca v1.1.0</h1>
+                        
+                        <div class="mb-4">
+                            <img src="img/forca_<?= $erros ?>.png" alt="Forca com <?= $erros ?> erros" class="img-fluid" style="height: 250px; object-fit: contain;">
+                        </div>
                         
                         <h3 class="text-danger mb-3">Erros: <?= $erros ?> / 6</h3>
                         
@@ -83,8 +85,18 @@ if ($erros >= 6) {
                             <?= htmlspecialchars($palavraExibicao) ?>
                         </p>
 
-                        <?php if ($mensagem !== ""): ?>
-                            <div class="alert alert-info">
+                        <?php if ($mensagem !== ""): 
+                            // Define a cor do alerta baseado no conteúdo da mensagem
+                            $corAlerta = 'alert-info';
+                            if (strpos($mensagem, 'Acertou') !== false || strpos($mensagem, 'Parabéns') !== false) {
+                                $corAlerta = 'alert-success';
+                            } elseif (strpos($mensagem, 'Errou') !== false || strpos($mensagem, 'Fim de jogo') !== false) {
+                                $corAlerta = 'alert-danger';
+                            } elseif (strpos($mensagem, 'já tentou') !== false) {
+                                $corAlerta = 'alert-warning';
+                            }
+                        ?>
+                            <div class="alert <?= $corAlerta ?>">
                                 <?= htmlspecialchars($mensagem) ?>
                             </div>
                         <?php endif; ?>
